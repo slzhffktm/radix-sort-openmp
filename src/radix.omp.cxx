@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <chrono>
+#include <fstream>
 
 using namespace std;
 
@@ -75,6 +76,15 @@ void print_vector(vector<int> v) {
     cout << "]" << endl;
 }
 
+void print_output(vector<int> v) {
+    ofstream fout;
+    fout.open("output");
+    for (auto i : v) {
+        fout << i << "\n";
+    }
+    fout.close();
+}
+
 int main(int argc, char *argv[]) {
     int thread_count = strtol(argv[1], NULL, 10);
 
@@ -90,6 +100,7 @@ int main(int argc, char *argv[]) {
     radix(thread_count);
 
     // print_vector(input);
+    print_output(input);
 
     return 0;
 }
