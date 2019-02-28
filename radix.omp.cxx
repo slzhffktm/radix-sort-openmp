@@ -27,7 +27,7 @@ void radix(int thread_count) {
     int size = input.size();
     while(!done) {
         // print_vector(input);
-
+        
         for (auto it : input) {
             int idx = (it % m)/n;
             bucket[idx].push_back(it);
@@ -36,16 +36,12 @@ void radix(int thread_count) {
         if (bucket[0].size() == size) break;
         
         input.clear();
-        #pragma omp parallel num_threads(thread_count)
-        {
-            #pragma omp for ordered schedule(dynamic)
-            for (int i=0; i<10; i++) {
-                for (auto it : bucket[i]) {
-                    #pragma omp ordered
-                    input.push_back(it);
-                }
-                bucket[i].clear();
+        
+        for (int i=0; i<10; i++) {
+            for (auto it : bucket[i]) {
+                input.push_back(it);
             }
+            bucket[i].clear();
         }
 
         m *= 10; n *= 10;
@@ -63,7 +59,7 @@ void print_vector(vector<int> v) {
 int main(int argc, char *argv[]) {
     int thread_count = strtol(argv[1], NULL, 10);
 
-    int n = 200000;
+    int n = 400000;
     int arr[n];
 
     rng(arr, n);
