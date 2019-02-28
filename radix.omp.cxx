@@ -10,9 +10,7 @@ void radix(int);
 void print_vector(vector<int>);
 
 // global variables
-vector<vector<int>> bucket(10);
 vector<int> input;
-int m=10, n=1;
 
 void rng(int* arr, int n) {
     int seed = 13516121; // Ganti dengan NIM anda sebagai seed.
@@ -25,27 +23,48 @@ void rng(int* arr, int n) {
 void radix(int thread_count) {
     int done = 0;
     int size = input.size();
+ 
+    vector<vector<vector<int>>> buckets(thread_count, vector<vector<int>>(10));
+    
+    chrono::steady_clock sc;   // create an object of `steady_clock` class
+    auto start = sc.now();
+    
+    int m = 10, n = 1;
+
     while(!done) {
-        // print_vector(input);
+        int i;
+        int sum0 = 0;
         
-        for (auto it : input) {
-            int idx = (it % m)/n;
-            bucket[idx].push_back(it);
+            
+        #pragma omp parallel for schedule(static) num_threads(thread_count) reduction(+:sum0)
+        for (i = 0; i < size; i++) {
+            int id = omp_get_thread_num();
+            int idx = (input[i] % m)/(n);
+            buckets[id][idx].push_back(input[i]);
+            if (idx == 0) sum0++;
         }
         
-        if (bucket[0].size() == size) break;
+
+        if (sum0 == size) break;
         
         input.clear();
-        
+
         for (int i=0; i<10; i++) {
-            for (auto it : bucket[i]) {
-                input.push_back(it);
+            for (int j=0; j<thread_count; j++) {
+                for (auto it : buckets[j][i]) {
+                    input.push_back(it);
+                }
+                buckets[j][i].clear();
             }
-            bucket[i].clear();
         }
 
-        m *= 10; n *= 10;
+        m *= 10;
+        n *= 10;
     }
+
+    auto end = sc.now();
+    auto time_span = static_cast<chrono::duration<double>>(end - start);   // measure time span between start & end
+    cout<<"Operation took: "<<time_span.count()<<" seconds";
 }
 
 void print_vector(vector<int> v) {
@@ -59,23 +78,16 @@ void print_vector(vector<int> v) {
 int main(int argc, char *argv[]) {
     int thread_count = strtol(argv[1], NULL, 10);
 
-    int n = 400000;
-    int arr[n];
+    int size = 400000;
+    int arr[size];
 
-    rng(arr, n);
+    rng(arr, size);
 
-    for (int i=0; i<n; i++) {
+    for (int i=0; i<size; i++) {
         input.push_back(arr[i]);
     }
 
-    chrono::steady_clock sc;   // create an object of `steady_clock` class
-    auto start = sc.now();
-    
     radix(thread_count);
-    
-    auto end = sc.now();
-    auto time_span = static_cast<chrono::duration<double>>(end - start);   // measure time span between start & end
-    cout<<"Operation took: "<<time_span.count()<<" seconds";
 
     // print_vector(input);
 

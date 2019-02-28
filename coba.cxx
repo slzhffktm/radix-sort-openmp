@@ -6,13 +6,14 @@ using namespace std;
 int main(int argc, char *argv[]) {
     int thread_count = strtol(argv[1], NULL, 10);
 
-    // int i;
+    int i;
     #pragma omp parallel num_threads(thread_count)
-    {
-        for (int i=0; i<=10; i++) {
+    {   
+        #pragma omp for schedule(static)
+        for (i=0; i<=100; i++) {
             int id = omp_get_thread_num();
-
-            cout << "thread " << id << " prints " << i << endl;
+            
+            cout << "t" << id << " p" << i << endl;
         }
         
     }

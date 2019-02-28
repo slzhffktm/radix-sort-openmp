@@ -57,7 +57,7 @@ void print_vector(vector<int> v) {
 
 int main(void) {
     
-    int n = 200000;
+    int n = 400000;
     int arr[n];
 
     rng(arr, n);
