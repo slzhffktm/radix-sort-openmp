@@ -22,7 +22,6 @@ void rng(int* arr, int n) {
 }
 
 void radix(int thread_count) {
-    int done = 0;
     int size = input.size();
  
     vector<vector<vector<int>>> buckets(thread_count, vector<vector<int>>(10));
@@ -32,7 +31,7 @@ void radix(int thread_count) {
     
     int m = 10, n = 1;
 
-    while(!done) {
+    while(1) {
         int i;
         int sum0 = 0;
         
@@ -64,8 +63,8 @@ void radix(int thread_count) {
     }
 
     auto end = sc.now();
-    auto time_span = static_cast<chrono::duration<double>>(end - start);   // measure time span between start & end
-    cout<<"Operation took: "<<time_span.count()<<" seconds";
+    auto time_span = static_cast<chrono::duration<double>>(end - start)*1000000;   // measure time span between start & end
+    cout<<"Operation took: "<<time_span.count()<<" microseconds";
 }
 
 void print_vector(vector<int> v) {
@@ -86,9 +85,13 @@ void print_output(vector<int> v) {
 }
 
 int main(int argc, char *argv[]) {
+    if (argc < 3) {
+        cout << "Usage: ./radix_sort thread_number input_size" << endl;
+        exit(0);
+    }
     int thread_count = strtol(argv[1], NULL, 10);
+    int size = stoi(argv[2]);
 
-    int size = 400000;
     int arr[size];
 
     rng(arr, size);
