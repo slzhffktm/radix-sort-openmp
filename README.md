@@ -23,6 +23,11 @@ radix_sort <thread_count> <size>
 
 ## Pembagian Kerja
 
+NIM | Pembagian Kerja
+--- | ---------------
+13516007 | program & laporan
+13516121 | program & laporan
+
 ## Laporan Pengerjaan
 
 ### Solusi Paralel
